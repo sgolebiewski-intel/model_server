@@ -13,14 +13,14 @@ mv ${PWD}/models/public/resnet-50-tf/FP32 ${PWD}/models/public/resnet-50-tf/1
 
 ## Starting a Docker Container with Intel integrated GPU, Intel® Data Center GPU Flex Series and Intel® Arc™ GPU
 
-The [GPU plugin](https://docs.openvino.ai/2024/openvino-workflow/running-inference/inference-devices-and-modes/gpu-device.html) uses the Intel Compute Library for 
-Deep Neural Networks ([clDNN](https://01.org/cldnn)) to infer deep neural networks. For inference execution, it employs Intel® Processor Graphics including 
+The [GPU plugin](https://docs.openvino.ai/2025/openvino-workflow/running-inference/inference-devices-and-modes/gpu-device.html) uses the Intel Compute Library for
+Deep Neural Networks ([clDNN](https://01.org/cldnn)) to infer deep neural networks. For inference execution, it employs Intel® Processor Graphics including
 Intel® HD Graphics, Intel® Iris® Graphics, Intel® Iris® Xe Graphics, and Intel® Iris® Xe MAX graphics.
 
 
 Before using GPU as OpenVINO Model Server target device, you need to:
-- install the required drivers - refer to [OpenVINO installation guide](https://docs.openvino.ai/2024/get-started/configurations.html)
-- start the docker container with the additional parameter of `--device /dev/dri` to pass the device context 
+- install the required drivers - refer to [OpenVINO installation guide](https://docs.openvino.ai/2025/get-started/configurations.html)
+- start the docker container with the additional parameter of `--device /dev/dri` to pass the device context
 - set the parameter of `--target_device` to `GPU`.
 - use the `openvino/model_server:latest-gpu` image, which contains GPU dependencies
 
@@ -54,13 +54,13 @@ If you need to build the OpenVINO Model Server with different driver version, re
 
 ## Using Multi-Device Plugin
 
-If you have multiple inference devices available (e.g. Myriad VPUs and CPU) you can increase inference throughput by enabling the Multi-Device Plugin. 
+If you have multiple inference devices available (e.g. Myriad VPUs and CPU) you can increase inference throughput by enabling the Multi-Device Plugin.
 It distributes Inference requests among multiple devices, balancing out the load. For more detailed information read OpenVINO’s [Multi-Device plugin documentation](https://docs.openvino.ai/2024/documentation/legacy-features/multi-device.html) documentation.
 
 To use this feature in OpenVINO Model Server, you can choose one of two ways:
 
-1. Use a .json configuration file to set the `--target_device` parameter with the pattern of: `MULTI:<DEVICE_1>,<DEVICE_2>`. 
-The order of the devices will define their priority, in this case making `device_1` the primary selection. 
+1. Use a .json configuration file to set the `--target_device` parameter with the pattern of: `MULTI:<DEVICE_1>,<DEVICE_2>`.
+The order of the devices will define their priority, in this case making `device_1` the primary selection.
 
 This example of a config.json file sets up the Multi-Device Plugin for a resnet model, using Intel Movidius Neural Compute Stick and CPU as devices:
 
@@ -75,7 +75,7 @@ echo '{"model_config_list": [
 }' >> models/public/resnet-50-tf/config.json
 ```
 
-To start OpenVINO Model Server, with the described config file placed as `./models/config.json`, set the `grpc_workers` parameter to match the `nireq` field in config.json 
+To start OpenVINO Model Server, with the described config file placed as `./models/config.json`, set the `grpc_workers` parameter to match the `nireq` field in config.json
 and use the run command, like so:
 
 ```bash
@@ -84,24 +84,24 @@ docker run -d --rm --device=/dev/dri --group-add=$(stat -c "%g" /dev/dri/render*
 openvino/model_server:latest-gpu --config_path /opt/model/config.json --port 9001
 ```
 
-2. When using just a single model, you can start OpenVINO Model Server without the config.json file. To do so, use the run command together with additional parameters, like so: 
+2. When using just a single model, you can start OpenVINO Model Server without the config.json file. To do so, use the run command together with additional parameters, like so:
 
 ```bash
 docker run -d --rm --device=/dev/dri --group-add=$(stat -c "%g" /dev/dri/render* | head -n 1) \
 -u $(id -u):$(id -g) -v ${PWD}/models/public/resnet-50-tf/:/opt/model:ro -p 9001:9001 \
 openvino/model_server:latest-gpu --model_path /opt/model --model_name resnet --port 9001 --target_device 'MULTI:GPU,CPU'
 ```
- 
-The deployed model will perform inference on both Intel Movidius Neural Compute Stick and CPU. 
+
+The deployed model will perform inference on both Intel Movidius Neural Compute Stick and CPU.
 The total throughput will be roughly equal to the sum of CPU and Intel Movidius Neural Compute Stick throughputs.
- 
+
 ## Using Heterogeneous Plugin
 
-The [HETERO plugin](https://docs.openvino.ai/2024/openvino-workflow/running-inference/inference-devices-and-modes/hetero-execution.html) makes it possible to distribute inference load of one model 
-among several computing devices. That way different parts of the deep learning network can be executed by devices best suited to their type of calculations. 
+The [HETERO plugin](https://docs.openvino.ai/2025/openvino-workflow/running-inference/inference-devices-and-modes/hetero-execution.html) makes it possible to distribute inference load of one model
+among several computing devices. That way different parts of the deep learning network can be executed by devices best suited to their type of calculations.
 OpenVINO automatically divides the network to optimize the process.
 
-The Heterogeneous plugin can be configured using the `--target_device` parameter with the pattern of: `HETERO:<DEVICE_1>,<DEVICE_2>`. 
+The Heterogeneous plugin can be configured using the `--target_device` parameter with the pattern of: `HETERO:<DEVICE_1>,<DEVICE_2>`.
 The order of devices will define their priority, in this case making `device_1` the primary and `device_2` the fallback one.
 
 Here is a config example using heterogeneous plugin with GPU as the primary device and CPU as a fallback.
@@ -119,7 +119,7 @@ echo '{"model_config_list": [
 
 ## Using AUTO Plugin
 
-[Auto Device](https://docs.openvino.ai/2024/openvino-workflow/running-inference/inference-devices-and-modes/auto-device-selection.html) (or AUTO in short) is a new special “virtual” or “proxy” device in the OpenVINO toolkit, it doesn’t bind to a specific type of HW device.
+[Auto Device](https://docs.openvino.ai/2025/openvino-workflow/running-inference/inference-devices-and-modes/auto-device-selection.html) (or AUTO in short) is a new special “virtual” or “proxy” device in the OpenVINO toolkit, it doesn’t bind to a specific type of HW device.
 AUTO solves the complexity in application required to code a logic for the HW device selection (through HW devices) and then, on the deducing the best optimization settings on that device.
 AUTO always chooses the best device, if compiling model fails on this device, AUTO will try to compile it on next best device until one of them succeeds.
 Make sure you have passed the devices and access to the devices you want to use in for the docker image. For example with:

@@ -16,7 +16,7 @@ make release_image GPU=1
 It will create an image called `openvino/model_server:latest`.
 > **Note:** This operation might take 40min or more depending on your build host.
 > **Note:** `GPU` parameter in image build command is needed to include dependencies for GPU device.
-> **Note:** The public image from the last release might be not compatible with models exported using the the latest export script. Check the [demo version from the last release](https://github.com/openvinotoolkit/model_server/tree/releases/2024/4/demos/continuous_batching) to use the public docker image.
+> **Note:** The public image from the last release might be not compatible with models exported using the the latest export script. Check the [demo version from the last release](https://github.com/openvinotoolkit/model_server/tree/releases/2025/0/demos/continuous_batching) to use the public docker image.
 
 ## Model preparation
 > **Note** Python 3.9 or higher is need for that step
@@ -31,8 +31,8 @@ pip3 install -U -r demos/common/export_models/requirements.txt
 
 Run optimum-cli to download and quantize the model:
 ```bash
-mkdir models 
-python demos/common/export_models/export_model.py text_generation --source_model meta-llama/Meta-Llama-3-8B-Instruct --weight-format fp16 --kv_cache_precision u8 --config_file_path models/config.json --model_repository_path models 
+mkdir models
+python demos/common/export_models/export_model.py text_generation --source_model meta-llama/Meta-Llama-3-8B-Instruct --weight-format fp16 --kv_cache_precision u8 --config_file_path models/config.json --model_repository_path models
 ```
 > **Note:** Change the `--weight-format` to quantize the model to `int8` or `int4` precision to reduce memory consumption and improve performance.
 > **Note:** Before downloading the model, access must be requested. Follow the instructions on the [HuggingFace model page](https://huggingface.co/meta-llama/Meta-Llama-3-8B) to request access. When access is granted, create an authentication token in the HuggingFace account -> Settings -> Access Tokens page. Issue the following command and enter the authentication token. Authenticate via `huggingface-cli login`.
@@ -59,7 +59,7 @@ models
         └── tokenizer.json
 ```
 
-The default configuration of the `LLMExecutor` should work in most cases but the parameters can be tuned inside the `node_options` section in the `graph.pbtxt` file. 
+The default configuration of the `LLMExecutor` should work in most cases but the parameters can be tuned inside the `node_options` section in the `graph.pbtxt` file.
 Note that the `models_path` parameter in the graph file can be an absolute path or relative to the `base_path` from `config.json`.
 Check the [LLM calculator documentation](../../docs/llm/reference.md) to learn about configuration options.
 
@@ -73,7 +73,7 @@ docker run -d --rm -p 8000:8000 -v $(pwd)/models:/workspace:ro openvino/model_se
 ```
 ### GPU
 
-In case you want to use GPU device to run the generation, add extra docker parameters `--device /dev/dri --group-add=$(stat -c "%g" /dev/dri/render* | head -n 1)` 
+In case you want to use GPU device to run the generation, add extra docker parameters `--device /dev/dri --group-add=$(stat -c "%g" /dev/dri/render* | head -n 1)`
 to `docker run` command, use the image with GPU support. Export the models with precision matching the GPU capacity and adjust pipeline configuration.
 It can be applied using the commands below:
 ```bash
