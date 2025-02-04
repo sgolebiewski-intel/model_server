@@ -136,4 +136,4 @@ results = client.predict(inputs=inputs, model_name="model")
 #
 ```
 
-For more details on `ovmsclient` see [API reference](https://github.com/openvinotoolkit/model_server/blob/main/client/python/ovmsclient/lib/docs/README.md)
+For more details on `ovmsclient` see [API reference](docs/README.md)
